@@ -84,3 +84,39 @@ exports.updateClient = async (req,res)=>{
         })
     }
 }
+
+
+exports.updateClientOrder  = async(req,res)=>{
+
+    try{
+        const {pop_arr,push_arr,orderId,clientId} = req.body ;
+        const ispop  =await Client.findOneAndUpdate({_id:clientId},{$pull:{[pop_arr]:orderId}}) ;
+        if(!ispop){
+            return res.status(400).json({
+                success:false,
+                message:"got err while poping"
+            })
+        }
+
+        const ispush =await Client.findOneAndUpdate({_id:clientId},{$push:{[push_arr]:orderId}}) ;
+        if(!ispush){
+            return res.status(400).json({
+                success:false,
+                message:"got err while pushing"
+            })
+        }
+        const client = await Client.findOne({_id:clientId}) ;
+        console.log(client);
+        res.status(200).json({
+            success:true,
+            client,
+            message:"client updated successfully"
+        })
+
+    }catch(err){
+        return res.status(500).json({
+            success:false,
+            message:"got error",err
+        })
+    }
+}

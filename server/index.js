@@ -1,11 +1,9 @@
 const express = require("express")
 require("dotenv").config()
 
-
 const app = express() ;
 
 //midlewares
-
 app.use(express.json())
 
 //mounting
