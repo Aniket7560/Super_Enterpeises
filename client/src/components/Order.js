@@ -1,16 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {setOrderList,setCylinderList} from '../redux/appSlice' ;
+import { useNavigate } from 'react-router-dom';
 
 function Order() {
-  const [items, setItems] = useState([
-    { id: 1, date: "12/2/2024", name: 'omkar', cost: 200},
-    { id: 2, date: "5/2/2024", name: 'Deepak', cost: 200},
-    { id: 3, date: "13/1/2024", name: 'Chetan', cost: 200}
-  ]);
+  const items = useSelector(state => state.appSlice.orderList) ;
+  const dispatch = useDispatch() ;
+  console.log(items) ;
+  const [date,setDate] = useState({"startDate":"","startDate":""});
+  const navigate = useNavigate()
+  
+  async function fetchOrderList(){
+    try{
+        const res= await fetch('api/v1/getorder',{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":`Bearer ${JSON.parse(localStorage.getItem('token'))}`
+             },
+             body:JSON.stringify(date)
+        })
+        const data = await res.json();
+        if(data.success==true){
+            dispatch(setOrderList(data.orderList));
+            // toast.success("logged in successfully");
+            console.log(data.message);
+            console.log(data.orderList);
+        }else{
+            // toast.error("enter valid details");
+            console.log("a",data) ;
+        }
+       
+    }catch(err){
+        console.log(err);
+    }
+}
 
+   function dateChangeHandler(event){
+      setDate(()=>({
+        ...date,
+        [event.target.name]:event.target.value
+      }))
+   }
+function dateSubmitHandler(){
+  fetchOrderList() ;
+  console.log(items)
+}
   
 
   return (
     <div className="container">
+      <input
+      type='date'
+      name="startDate"
+      onChange={dateChangeHandler}
+      >
+      </input>
+      <input
+      type='date'
+      name="endDate"
+      onChange={dateChangeHandler}
+      >
+      </input>
+      <button onClick={dateSubmitHandler}>Find</button>
+      <button onClick={()=>{
+        navigate("/addorder") ;
+      }}>add order</button>
+
       <table className="table">
         <thead>
           <tr>
@@ -22,11 +78,11 @@ function Order() {
         </thead>
         <tbody>
           {items.map(item => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
+            <tr key={item._id}>
+              <td>{item._id}</td>
               <td>{item.date}</td>
-              <td>{item.name}</td>
-              <td>{item.cost}</td>
+              <td>{item.time}</td>
+              {/* <td>{item.cost}</td> */}
             </tr>
           ))}
         </tbody>

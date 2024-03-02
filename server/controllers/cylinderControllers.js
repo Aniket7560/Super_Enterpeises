@@ -32,6 +32,29 @@ exports.addCylinder = async (req,res)=>{
     }
 }
 
+exports.getCylinder = async (req,res)=>{
+    try{
+        const cylinderList = await Cylinder.find() ;
+        if(!cylinderList){
+            return res.status(404).json({
+                success:false ,
+                message:"got an error  "
+            })
+        }
+        console.log(cylinderList) ;
+        return res.status(200).json({
+            success:true ,
+            cylinderList,
+            message:"successfully getting client list "
+        })
+    }catch(err){
+        return res.status(500).json({
+            success:false ,
+            message:`got error  :"${err}`
+        })
+    }
+}
+
 exports.deleteCylinder = async (req,res)=>{
     try{
         const {name,cylinderType} = req.body ;

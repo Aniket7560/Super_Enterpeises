@@ -2,8 +2,11 @@ const mongoose = require("mongoose") ;
 
 const orderScheme = mongoose.Schema({
     date:{
-        type:Object ,
+        type:Date ,
         required:true,
+    },
+    time:{
+      type:String,
     },
     items:[
        {
@@ -24,6 +27,9 @@ const orderScheme = mongoose.Schema({
     },
     note:{
         type:String,
+    },
+    cost:{
+      type:String
     }
 })
 

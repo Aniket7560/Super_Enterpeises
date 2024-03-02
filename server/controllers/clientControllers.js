@@ -32,6 +32,28 @@ exports.addClient = async (req,res)=>{
         })
     }
 }
+exports.getClient = async (req,res)=>{
+    try{
+        const clientList = await Client.find() ;
+        if(!clientList){
+            return res.status(400).json({
+                success:false ,
+                message:"got an error  "
+            })
+        }
+        console.log(clientList) ;
+        return res.status(200).json({
+            success:true ,
+            clientList,
+            message:"successfully getting client list "
+        })
+    }catch(err){
+        return res.status(500).json({
+            success:false ,
+            message:`got error  :"${err}`
+        })
+    }
+}
 
 exports.deleteClient = async (req,res)=>{
     try{

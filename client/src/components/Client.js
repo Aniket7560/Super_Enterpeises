@@ -1,36 +1,67 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from 'react-redux'
+import { setClientList } from '../redux/appSlice'
+import {NavLink, useNavigate} from "react-router-dom"
+function Client() {
+    const dispatch = useDispatch() ;
+    const items =useSelector(state => state.appSlice.clientList) ;
+    const navigate = useNavigate() ;
+    async function fetchClientList(){
+        try{
+            const res= await fetch('/api/v1/getClient',{
+                method:"GET",
+                headers:{
+                    "Content-Type":"application/json",
+                    "Authorization":`Bearer ${JSON.parse(localStorage.getItem('token'))}`
+                 },
+            })
+            const data = await res.json();
+            if(data.success==true){
+                dispatch(setClientList(data.clientList));
+                // navigate('/client') ;
+                // toast.success("logged in successfully");
+                console.log(data.message);
+            }else{
+                // toast.error("enter valid details");
+                console.log("a",data) ;
+            }
+           
+        }catch(err){
+            console.log(err);
+        }
+    }
 
-function Order() {
-    const [items, setItems] = useState([
-        { id: 1, date: "12/2/2024", name: 'Aniket', cost: 200 },
-        { id: 2, date: "5/2/2024", name: 'Deepak', cost: 200 },
-        { id: 3, date: "13/1/2024", name: 'Chetan', cost: 200 }
-    ]);
-
+    useEffect(()=>{
+        fetchClientList() ;
+    },[])
     return (
         <div className="container">
+             <button onClick={()=>{
+        navigate("/addclient") ;
+      }}>add Client</button>
             <table className="table">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Date</th>
+                        <th>contact</th>
                         <th>Name</th>
-                        <th>Cost</th>
+                        <th>address</th>
                     </tr>
                 </thead>
                 <tbody>
                     {items.map(item => (
-                        <tr key={item.id}>
-                            <td>{item.id}</td>
-                            <td>{item.date}</td>
+                       <NavLink to={`/client/${item._id}`}><tr key={item._id}>
+                            <td>{item._id}</td>
+                            <td>{item.phoneNo}</td>
                             <td>{item.name}</td>
-                            <td>{item.cost}</td>
-                        </tr>
+                            <td>{item.address}</td>
+                        </tr></NavLink> 
                     ))}
                 </tbody>
             </table>
+            {/* <button onClick={}>click me</button> */}
         </div>
     );
 }
 
-export default Order;
+export default Client;

@@ -29,6 +29,7 @@ exports.auth = async (req,res,next)=>{
         // }
         next() ;
     }catch(err){
+        console.log(err) ;
        return res.status(500).json({
         success:false,
         message:"got error "+err

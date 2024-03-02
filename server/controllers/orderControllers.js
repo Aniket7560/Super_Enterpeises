@@ -4,16 +4,9 @@ const Cylinder = require("../models/cylinder")
 
 exports.addOrder = async (req,res)=>{
     try{
-        const {items,clientPhone} = req.body ;
-        // const found = await Order.findOne({name,orderType});
-        // if(found){
-        //     return res.status(403).json({
-        //         success:false,
-        //         message:"order already registered"
-        //     })
-        // }
-        console.log(items) ;
-        const client = await Client.findOne({phoneNo:clientPhone}) ;
+        const {items,phoneNo,cost} = req.body ;
+        // console.log(items) ;
+        const client = await Client.findOne({phoneNo}) ;
         if(!client){
             return res.status(403).json({
                 success:false,
@@ -25,7 +18,7 @@ exports.addOrder = async (req,res)=>{
         let arr = []  ;
         for (item of items) {
             console.log(item);
-            const cylinder = await Cylinder.findOne({name:item.name,cylinderType:item.cylinderType}) ;
+            const cylinder = await Cylinder.findOne({_id:item._id}) ;
             if(!cylinder){
                 return res.status(403).json({
                     success:false,
@@ -36,19 +29,11 @@ exports.addOrder = async (req,res)=>{
             arr.push({cylinder:cylinder._id,count:item.count}) ;
 
         }
-        console.log("arr:",arr) ;
+        // console.log("arr:",arr) ;
         // arr = items.map(async(item)=>{
-        let date = new Date() ;
-        currDate = {
-            dd:date.getDate(),
-            mm:date.getMonth(),
-            yyyy:date.getFullYear(),
-            hh:date.getHours(),
-            min:date.getMinutes(),
-            sec:date.getSeconds()
-        }
-        console.log(currDate) ;
-        const order =await Order.create({date:currDate,items:arr,client:client._id}) ;
+        let date = new Date();
+        let time = `${date.getHours()}` + ":"+ `${date.getMinutes()}` ;
+        const order =await Order.create({date:new Date().toISOString(),time:time,items:arr,client:client._id,cost}) ;
 
         if(order){
             try{
@@ -82,6 +67,56 @@ exports.addOrder = async (req,res)=>{
             message:"got an error :"+err ,
         })
     }
+}
+//-----------------------------pending --------------------------------------------
+exports.getOrder = async (req,res)=>{
+    try{
+        let {startDate,endDate,_id} = req.body ;
+        console.log(req.body)
+        if(_id){
+            console.log(_id) ;
+            const order = await Order.findOne({_id:_id});
+        if(!order){
+            return res.status(403).json({
+                success:false,
+                message:"order not found"
+            })
+        }
+        console.log(order)
+        res.status(200).json({
+            success:true,
+            order,
+            message:"order  successfully"
+        })
+    }
+    else{
+        startDate = new Date(startDate);
+        endDate = new Date(endDate);
+        console.log(startDate);
+        console.log(endDate);
+        const orderList = await Order.find({
+                "date": { $gte: startDate, $lte: endDate }
+        });
+        if(!orderList){
+            return res.status(403).json({
+                success:false,
+                message:"order not found"
+            })
+        }
+        console.log(orderList)
+        res.status(200).json({
+            success:true,
+            orderList,
+            message:"order  successfully"
+        })
+    }
+    }catch(err){
+        res.status(500).json({
+            success:false,
+            message:"got an error :"+err ,
+        })
+    
+}
 }
 
 exports.deleteOrder = async (req,res)=>{

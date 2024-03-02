@@ -1,6 +1,6 @@
 import React from 'react'
 import {Link} from 'react-router-dom';
-
+import { NavLink } from 'react-router-dom';
 
 function Header() {
     return (
@@ -15,8 +15,8 @@ function Header() {
                     <div className="collapse navbar-collapse justify-content-center" id="navbarNavAltMarkup">
                         <div className="navbar-nav">
                             {/* <a className="nav-link active" aria-current="page" href="#"></a> */}
-                            <Link to="/client" className="nav-link">Order List</Link>
-                            <Link to="/order" className="nav-link">Client List</Link>
+                            <NavLink to="/client" className="nav-link">Order List</NavLink>
+                            <NavLink to="/order" className="nav-link">Client List</NavLink>
                             {/* <Link to="/client" className="nav-link">Quotation</Link> */}
                             {/* <a className="nav-link" href="#"></a> */}
                         </div>

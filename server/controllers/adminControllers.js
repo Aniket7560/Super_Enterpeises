@@ -7,7 +7,7 @@ exports.loginController = async (req,res)=>{
     try{
         //extract info from req body
         const  {email,password } = req.body ;
-
+        console.log(email,password) ;
         //validation
         if(!email || !password){
             return res.status(403).json({
